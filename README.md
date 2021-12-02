@@ -56,10 +56,10 @@ Transform.Rmd      Transform data to improve normality
 
 ## Final Products:
 
-Case2PredictionsNdedeAttrition.csv 		- prediction of Attrition
+Case2PredictionsNdedeAttrition.csv 		  - predicting the Attrition
 
-Case2PredictionsNdedeSalary.csv    		- prediction of Monthly Income
+Case2PredictionsNdedeSalary.csv    		  - predicting the Monthly Income
 
-CaseStudy.html                      	- final full report
+CaseStudy.html                      	  - Final full report
 
-Ndede_George_DS6306_CaseStudy-2.pptx    - presentation
+Ndede_George_DS6306_CaseStudy-2.pptx    - Power Point presentation
