@@ -9,22 +9,19 @@ DS6306 Fall 2021
 Email: gndede@smu.edu
 
 
-##
-Introduction
+## Introduction:
+
 The modern workforce in the United States is becoming more fluid than ever before. 
 As the cost of living in the country continues to increase, wages are remaining stagnant, as reported 
 in the latest economic trends. Aa a result of this, we are seeing more employees shift between companies 
 after just a few years and using the larger pay raise associated with switching jobs 
 (as compared to staying in a single job) as a way to bolster their income to make a living.
 
-
 ## Purpose:
 
 DDSAnalytics purpose in this study is planning to leverage data science for 
 talent management. The executive leadership has identified predicting employee 
 turnover as its first application of data science for talent management.
-
-
 
 ## Data files:
 
