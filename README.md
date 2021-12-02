@@ -44,7 +44,7 @@ Naive_Bayes.Rmd    Naive Bayes implementation
 
 Salary.Rmd         Linear Regression to predict salary
 
-Selection_att.Rmd  Using stepwise variable selection
+Selection.Rmd  Using stepwise variable selection
 
 Transform.Rmd      Transform data to improve normality
 
