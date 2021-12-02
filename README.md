@@ -8,6 +8,8 @@ DS6306 Fall 2021
 
 Email: gndede@smu.edu
 
+YouTube Linke: 
+
 ## Introduction:
 
 The modern workforce in the United States is becoming more fluid than ever before. 
@@ -15,6 +17,11 @@ As the cost of living in the country continues to increase, wages are remaining 
 in the latest economic trends. Aa a result of this, we are seeing more employees shift between companies 
 after just a few years and using the larger pay raise associated with switching jobs 
 (as compared to staying in a single job) as a way to bolster their income to make a living.
+
+To combat this trend and potentially get a closer feel of the status of each employee and their potential 
+for attribution, we are going to conduct a data analysis to identify trends in the employee base job titles, 
+overall sentiment as well as salary with hopes to be able to predict which employee is likely to leave the 
+company and what salaries are associated with the employee’s current standing. 
 
 ## Purpose:
 
