@@ -1,4 +1,4 @@
-# Case Study 2 - Employ Attrition Case Study 2
+# Case Study 2 - Employ Attrition. A Case Study 2
 
 Title: "Employment Attrition Case Study 2"
 
