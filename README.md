@@ -32,21 +32,21 @@ CaseStudy.Rmd      Main report, which includes following files
 
 dataload.Rmd       load data
 
-eda_attrition.Rmd  EDA for investigating attrition
+EDA_Attrition.Rmd  EDA for investigating attrition
 
-eda_basic.Rmd      Very simple sanity check EDA
+EDA_Basic.Rmd      Very simple sanity check EDA
 
-eda_transform.Rmd  EDA for investigating transform
+EDA_transform.Rmd  EDA for investigating transform
 
-knn.Rmd            K-nearest-neighbor implementation
+KNN.Rmd            K-nearest-neighbor implementation
 
-naive_bayes.Rmd    Naive Bayes implementation
+Naive_Bayes.Rmd    Naive Bayes implementation
 
-salary.Rmd         Linear Regression to predict salary
+Salary.Rmd         Linear Regression to predict salary
 
-selection_att.Rmd  Using stepwise variable selection
+Selection_att.Rmd  Using stepwise variable selection
 
-transform.Rmd      Transform data to improve normality
+Transform.Rmd      Transform data to improve normality
 
 ## Final Products:
 
