@@ -1,13 +1,12 @@
 # Case Study 2 - Employ Attrition. A Case Study #2
 
-Title: "Employment Attrition Case Study 2"
+Title: Employment Attrition Case Study 2
 
-Author: "George M. Ndede" 
+Author: Ndede, George M.  
 
 DS6306 Fall 2021
 
 Email: gndede@smu.edu
-
 
 ## Introduction:
 
