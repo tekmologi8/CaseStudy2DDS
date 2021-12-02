@@ -1,8 +1,11 @@
 # Case Study 2 - Employment Attrition Case Study 2
 
 Title: "Employment Attrition Case Study 2"
+
 Author: "George M. Ndede" 
+
 DS6306 Fall 2021
+
 Email: gndede@smu.edu
 
 
