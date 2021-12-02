@@ -8,7 +8,7 @@ DS6306 Fall 2021
 
 Email: gndede@smu.edu
 
-YouTube Link: 
+YouTube Link: https://youtu.be/LW6GBd8BJls
 
 ## Introduction:
 
