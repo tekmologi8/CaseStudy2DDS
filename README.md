@@ -29,19 +29,31 @@ turnover as its first application of data science for talent management.
 
 CaseStudy.Rmd      Main report, which includes following files
 
+
 dataload.Rmd       load data
+
 eda_attrition.Rmd  EDA for investigating attrition
+
 eda_basic.Rmd      Very simple sanity check EDA
+
 eda_transform.Rmd  EDA for investigating transform
+
 knn.Rmd            K-nearest-neighbor implementation
+
 naive_bayes.Rmd    Naive Bayes implementation
+
 salary.Rmd         Linear Regression to predict salary
+
 selection_att.Rmd  Using stepwise variable selection
+
 transform.Rmd      Transform data to improve normality
 
 ## Final Products:
 
 Case2PredictionsNdedeAttrition.csv 		- prediction of Attrition
+
 Case2PredictionsNdedeSalary.csv    		- prediction of Monthly Income
+
 CaseStudy.html                      	- final full report
+
 Ndede_George_DS6306_CaseStudy-2.pptx    - presentation
