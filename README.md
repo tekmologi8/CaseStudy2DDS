@@ -1,6 +1,4 @@
-# CaseStudy2DDS
-
-# Case Study 2
+# Case Study 2 - Employment Attrition Case Study 2
 
 Title: "Employment Attrition Case Study 2"
 Author: "George M. Ndede" 
