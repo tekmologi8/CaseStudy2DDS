@@ -1,0 +1,111 @@
+---
+title: "Transform-EDA"
+author: "George M. Ndede"
+date: "11/30/2021"
+output: html_document
+---
+
+```{r eda_transform, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gridExtra)
+library(grid)
+library(ggplot2)
+library(lattice)
+
+```
+
+# EDA to consider data tranformations
+
+## Make histogram and QQ plot of each numeric variable
+
+Repeat with log and sqrt tranformations, with the goal of improving normality
+
+### Note that when the minimum value of a variable is 0, add 1 to make enable log transform
+
+```{r histogram_function}
+myqc <- function(varname,zb=0)
+{
+  index <- which(colnames(train_raw)==varname)
+  nbins <- 21
+  one_col <- train_raw %>% dplyr::select(index)
+  colnames(one_col)  <- c('x')
+  p1 <- one_col %>% ggplot(aes(x=x)) +
+    geom_histogram(bins=nbins,fill="white",color="black") +
+    geom_vline(aes(xintercept=mean(x),color="blue")) + 
+    ggtitle(varname)
+  p2 <- one_col %>% ggplot(aes(sample=x)) +
+    stat_qq() +
+    stat_qq_line() + 
+    ggtitle(varname)
+  p3 <- one_col %>% mutate(new_value = log(x+zb)) %>%
+    ggplot(aes(x=new_value)) +
+    geom_histogram(bins=nbins,fill="white",color="black") +
+    geom_vline(aes(xintercept=mean(log(x+zb)),color="blue")) + 
+    ggtitle(paste('log',varname))
+  p4 <- one_col %>% mutate(new_value = log(x+zb)) %>%
+    ggplot(aes(sample=new_value)) +
+    stat_qq() +
+    stat_qq_line() + 
+    ggtitle(paste('log',varname))
+  p5 <- one_col %>% mutate(new_value = sqrt(x+zb)) %>%
+    ggplot(aes(x=new_value)) +
+    geom_histogram(bins=nbins,fill="white",color="black") +
+    geom_vline(aes(xintercept=mean(sqrt(x+zb)),color="blue")) + 
+    ggtitle(paste('sqrt',varname))
+  p6 <- one_col %>% mutate(new_value = sqrt(x+zb)) %>%
+    ggplot(aes(sample=new_value)) +
+    stat_qq() +
+    stat_qq_line() + 
+    ggtitle(paste('sqrt',varname))
+  grid.arrange(p1,p2,p3,p4,p5,p6,nrow=3)
+}
+
+```
+
+```{r histogram_age}
+gc()
+myqc('Age')
+gc()
+myqc('DistanceFromHome')
+gc()
+myqc('MonthlyIncome')
+gc()
+myqc('YearsAtCompany',1)
+gc()
+myqc('YearsSinceLastPromotion',1)
+gc()
+myqc('YearsWithCurrManager',1)
+gc()
+myqc('WorkLifeBalance')
+gc()
+myqc('TotalWorkingYears',1)
+gc()
+myqc('PerformanceRating')
+gc()
+myqc('PercentSalaryHike')
+gc()
+myqc('JobLevel')
+gc()
+myqc('StockOptionLevel',1)
+gc()
+myqc('Education')
+gc()
+myqc('EnvironmentSatisfaction')
+gc()
+myqc('JobInvolvement')
+gc()
+myqc('JobSatisfaction')
+gc()
+myqc('NumCompaniesWorked',1)
+gc()
+myqc('RelationshipSatisfaction')
+gc()
+myqc('TrainingTimesLastYear',1)
+gc()
+myqc('WorkLifeBalance')
+gc()
+myqc('YearsInCurrentRole',1)
+gc()
+```
+
+

@@ -1,0 +1,199 @@
+---
+title: "DDS Case Study 2"
+author: "George M. Ndede"
+date: "12/01/2021"
+output: html_document
+---
+
+###### Source files can be found at https://github.com/tekmologi8/CaseStudy2DDS
+
+```{r setup, include=FALSE}
+# Load necessary packages and ensure they are active
+#load.lib = c("kableExtra","ggplot2","Amelia","pastecs","ROCR","reshape2","devtools","glmnet")
+
+install.lib = load.lib[!load.lib %in% installed.packages()]
+for(lib in install.lib){
+  install.packages(lib,dependencies=TRUE)
+} 
+
+sapply(load.lib,require,character=TRUE)
+install.packages("rpart.plot")  #https://rdrr.io/cran/rpart.plot/
+knitr::opts_chunk$set(echo = TRUE)
+library(plyr)
+library(kableExtra) # to make uber sexy tables for output
+#library(ggbiplot) # implementation of biplot using ggplot2 for plotting PCs
+library(pastecs) # for easy descriptive statistics
+library(ROCR) # for ROC plots and AUC calculations
+library(glmnet)
+# turn off scientfic notation for the entire script
+# set precision of decimal place to 2
+options(scipen = 999, digits=2)
+```
+
+## Introduction
+
+```{r, echo=TRUE}
+# load raw data
+employeeDatRaw <- read.csv('CaseStudy2data.csv', header=TRUE)
+emp <- employeeDatRaw
+str(emp)
+```
+```{r, echo=TRUE}
+# draw summary data
+summary(emp)
+``` 
+
+## Data Cleanup and Conversion
+#Drop the the columns with no variability.
+
+#Drop Over18 as there is no variability, all are Y.
+#Drop EmployeeCount as there is no variability, all are 1.
+#Drop StandardHours as there is no variability, all are 80.
+#### Checking for missing data values
+
+```{r, echo=TRUE}
+library(caret)
+library(lattice)
+nearZeroVar(emp)
+```
+
+
+```{r, echo=TRUE}
+emp$Over18 <- NULL
+emp$StandardHours <- NULL
+emp$EmployeeNumber <- NULL
+```
+
+```{r, echo=TRUE}
+#There are multiple numeric variables that are actually factors, convert these to factors.
+emp$Education <- as.factor(emp$Education)
+emp$EnvironmentSatisfaction <- as.factor(emp$EnvironmentSatisfaction)
+emp$JobInvolvement <- as.factor(emp$JobInvolvement)
+emp$JobLevel <- as.factor(emp$JobLevel)
+emp$JobSatisfaction <- as.factor(emp$JobSatisfaction)
+emp$PerformanceRating <- as.factor(emp$PerformanceRating)
+emp$RelationshipSatisfaction <- as.factor(emp$RelationshipSatisfaction)
+emp$StockOptionLevel <- as.factor(emp$StockOptionLevel)
+emp$TrainingTimesLastYear <- as.factor(emp$TrainingTimesLastYear)
+emp$WorkLifeBalance <- as.factor(emp$WorkLifeBalance)
+```
+
+```{r, echo=TRUE}
+#Create Training and Testing Sets.
+set.seed(777)
+library(caTools)
+```
+
+```{r, echo=TRUE}
+split = sample.split(emp$Attrition, SplitRatio = 0.75)
+
+# Create training and testing sets
+train = subset(emp, split == TRUE)
+test = subset(emp, split == FALSE)
+```
+
+```{r, echo=TRUE}
+library(rpart)
+library(rpart.plot)
+```
+
+```{r, echo=TRUE}
+model = rpart(Attrition ~ ., data=train, method="class")
+prp(model)
+#Predict on the test data
+prediction <- predict(model, newdata=test, type="class")
+```
+
+```{r, echo=TRUE}
+# Baseline Accuracy
+table(test$Attrition)
+```
+```{r, echo=TRUE}
+616/nrow(test)
+```
+```{r, echo=TRUE}
+#Confusion matrix 
+table(test$Attrition, prediction)
+```
+```{r, echo=TRUE}
+#CART model accuracy
+(603+40)/(nrow(test))
+```
+```{r,echo=TRUE}
+#Baseline Accuracy - If we just predict attrition as “No” for every observation, we will get an accuracy of 84%. Model Accuracy - #The model gave us an accuracy of 87.6%, an improvement of approx. 4% over the baseline accuracy.
+
+#As a fully grown tree is prone to overfitting, lets prune the tree and see if we can improve the model.
+printcp(model)
+```
+```{r, echo=TRUE}
+plotcp(model)
+```
+
+```{r, echo=TRUE}
+bestcp <- model$cptable[which.min(model$cptable[,"xerror"]),"CP"]
+prunedModel <-prune(model, cp= bestcp)
+prp(prunedModel)
+```
+```{r echo=TRUE}
+
+printcp(prunedModel)
+
+```
+```{r, echo=TRUE}
+plotcp(prunedModel)
+```
+
+
+
+
+
+
+Fortunately, this data is not missing any values as demonstrated by the code ran above and output below.
+
+##### Number of missing data values = `r numNAs`
+
+#### Columns with no variation have no impact on attrition
+
+We found several columns that don't have any variation and will actually cause future model building to fail. The code below is used to identify and remove those columns. We also convert the response Attrition to numeric for future use.
+
+```{r, echo=TRUE}
+#Predict on the test data
+prediction_pm <- predict(prunedModel, newdata=test, type="class")
+table(test$Attrition, prediction_pm)
+```
+```{r, echo=TRUE}
+(597+42)/nrow(test)
+
+```
+```{r, echo=TRUE}
+##### So, the pruning does not improve the model accuracy; the accuracy actually drops a little to approoximately 87% post pruning.
+
+library(ROCR)
+```
+
+
+```{r, echo=TRUE}
+
+# ROC CURVE
+prediction_ROC <- predict(prunedModel, newdata=test)
+pred = prediction(prediction_ROC[,2], test$Attrition)
+perf = performance(pred, "tpr", "fpr")
+plot(perf)
+```
+```{r, echo=TRUE}
+#Get Area under the curve
+as.numeric(performance(pred, "auc")@y.values)
+```
+
+#Inferences
+#Overtime, MonthlyIncome, TotalWorkingYears, HourlyRate, JobRole and Age are the most important factors influencing the attrition rates.
+#A total of 14 factors influence the attrition rate as is depicted in the decision tree. The complete list includes Age, DailyRate, #DistanceFromHome, EnvironmentSatisfaction, HourlyRate, JobRole, JobSatisfaction, MaritalStatus, MonthlyIncome, NumCompaniesWorked, #OverTime, RelationshipSatisfaction, StockOptionLevel and TotalWorkingYears.
+#CART does not improve upon the baseline accuracy by too much in case the classes are skewed. In this case, we had a skewed dependent #variable “Attrition” with 84% as “No”" in the test set.
+#Other ensemble methods like random forests can be used to improve the accuracy of the prediction.
+
+
+
+
+
+
+

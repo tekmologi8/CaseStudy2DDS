@@ -1,0 +1,164 @@
+---
+title: "Attrition EDA"
+author: "George M. Ndede"
+date: "11/30/2021"
+output: html_document
+---
+
+```{r eda_attrition, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gridExtra)
+library(grid)
+library(ggplot2)
+library(lattice)
+```
+
+# EDA for predicting attrition
+
+## Histogram of each numeric variable, distinguished by Attrition
+
+```{r def_hist_func}
+# convenience function
+attr_hist <- function(varname)
+{
+  nbins <- 21
+  index_1 <- which(colnames(employee_data)==varname)
+  index_2 <- which(colnames(employee_data)=='Attrition')
+  
+  tmp_1 <- employee_data %>%
+      dplyr::select(index_1,index_2)
+  colnames(tmp_1)  <- c('x','Attrition')
+    
+  two_cols <- tmp_1 %>%
+      dplyr::group_by(Attrition) %>%
+      mutate(grp.mean = mean(x))
+  
+  summary(two_cols)
+  
+  two_cols %>% ggplot(mapping=aes(x=x,y=..density..,fill=Attrition,color=Attrition)) +
+      geom_histogram(bins=nbins,alpha=0.5) +
+      geom_vline(aes(xintercept=grp.mean,color=Attrition)) + 
+      ggtitle(varname) 
+  
+  #rm(tmp_1,two_cols)
+  #gc()
+}
+
+```
+
+```{r many_histograms}
+# histogram of each of the numeric predictors, separated by Attrition
+attr_hist('Age')
+attr_hist('DistanceFromHome')
+attr_hist('MonthlyIncome')
+attr_hist('YearsAtCompany')
+attr_hist('YearsSinceLastPromotion')
+attr_hist('YearsWithCurrManager')
+attr_hist('WorkLifeBalance')
+attr_hist('TotalWorkingYears')
+attr_hist('PerformanceRating')
+attr_hist('PercentSalaryHike')
+attr_hist('JobLevel')
+attr_hist('StockOptionLevel')
+attr_hist('Education')
+attr_hist('EnvironmentSatisfaction')
+attr_hist('JobInvolvement')
+attr_hist('JobSatisfaction')
+attr_hist('NumCompaniesWorked')
+attr_hist('RelationshipSatisfaction')
+attr_hist('TrainingTimesLastYear')
+attr_hist('WorkLifeBalance')
+attr_hist('YearsInCurrentRole')
+attr_hist('numeric_MaritalStatus')
+attr_hist('numeric_OverTime')
+
+```
+The numeric variables that seem most related to Attrition are ..
+
+
+## Bar charts to show percentage attrition, separated by each categorical variable
+
+```{r tab_1}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(EducationField,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=EducationField,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by EducationField')
+```
+
+```{r tab_2}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(BusinessTravel,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=BusinessTravel,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by BusinessTravel')
+```
+
+```{r tab_3}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(Department,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=Department,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by Department')
+```
+
+```{r tab_4}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(Gender,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=Gender,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by Gender')
+```
+
+```{r tab_5}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(JobRole,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=JobRole,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by JobRole')
+```
+
+```{r tab_6}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(MaritalStatus,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=MaritalStatus,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by MaritalStatus')
+```
+
+```{r tab_7}
+# tabulate yes and no by categorical variables
+employee_data %>%
+  group_by(OverTime,Attrition) %>%
+  summarise(count=n()) %>%
+  spread(Attrition,count) %>% 
+  mutate(perc=Yes/No) %>% 
+  ggplot(aes(x=OverTime,y=perc)) + 
+  geom_bar(stat="identity") +
+  ggtitle('Percent Attrition by OverTime')
+```
+

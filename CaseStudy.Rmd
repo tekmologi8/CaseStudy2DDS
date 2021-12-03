@@ -1,0 +1,46 @@
+---
+title: "Employment Attrition Case Study 2"
+author: "George M. Ndede"
+date: "12/01/2021"
+output: html_document
+---
+
+```{r naive_bayes, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Employment Attrition Case Study 2 
+
+## Ndede, George M.
+
+## DS 6306 - Fall 2021
+
+```{r child = 'dataload.Rmd'}
+```
+
+```{r child = 'eda_basic.Rmd', eval=FALSE}
+```
+
+```{r child = 'eda_transform.Rmd', eval=FALSE}
+```
+
+```{r child = 'transform.Rmd',eval=TRUE}
+```
+
+```{r child = 'eda_attrition.Rmd', eval=FALSE}
+```
+
+```{r child = 'selection_att.Rmd', eval=FALSE}
+```
+
+```{r child = 'naive_bayes.Rmd',eval=FALSE}
+```
+
+```{r child = 'knn.Rmd',eval=FALSE}
+```
+
+```{r child = 'salary.Rmd',eval=TRUE}
+```
+
+
+

@@ -1,0 +1,138 @@
+---
+title: "Transform"
+author: "George M. Ndede"
+date: "12/01/2021"
+output: html_document
+---
+
+```{r tranform, include=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+# Data Transformation
+
+## Drop unused variables
+
+### these are constant
+
+- Over18
+- EmployeeCount
+- StandardHours
+
+### the meaning of these is unclear, so we drop them
+
+- DailyRate
+- MonthlyRate
+- HourlyRate
+
+### These are solely for identification
+
+- EmployeeNumber
+
+## Address non-normality in numeric variables.
+
+### We will apply tranforms as follows:
+
+Age - None  
+Distance From Home - Square Root  
+Monthly Income - Log  
+YearsAtCompany - Log  
+YearsSinceLastPromotion - Log  
+YearsWithCurrentManager - Log  
+WorkLifeBalance - None  
+TotalWorkingYears - Squre Root  
+PerformanceRating - None  
+PercentSalaryHike - None  
+JobLevel - None  
+StockOptionLevel - None  
+Education - None  
+EnvironmentSatisfaction - None  
+JobInvolvement - None
+JobSatisfaction - None
+NumCompaniesWorked - None
+RelationshipSatisfaction - None
+TrainingTimesLastYear - None
+WorkLifeBalance - None
+YearsInCurrentRole - None
+
+
+```{r xform}
+
+# define a function to do this, so that we can apply it on blind test datasets
+# put in data transformations to try to keep numeric columns looking normal
+# also scale data to comparable ranges, the better to feed knn
+my_transform <- function(raw_df) 
+{
+  xformed <- raw_df %>% dplyr::select(-Over18,
+                               -EmployeeNumber,
+                               -EmployeeCount,
+                               -DailyRate,
+                               -MonthlyRate,
+                               -HourlyRate,
+                               -StandardHours) %>%
+    mutate(numeric_OverTime = as.integer(OverTime),
+        numeric_MaritalStatus = as.integer(MaritalStatus)) %>%
+    mutate(t_DistanceFromHome = sqrt(DistanceFromHome),
+       t_Education = Education,
+       t_EnvironmentSatisfaction = EnvironmentSatisfaction,
+       t_JobInvolvement = JobInvolvement,
+       t_JobLevel = JobLevel,
+       t_JobSatisfaction = JobSatisfaction,
+       t_NumCompaniesWorked = NumCompaniesWorked,
+       t_PercentSalaryHike = PercentSalaryHike,
+       t_PerformanceRating = PerformanceRating,
+       t_RelationshipSatisfaction = RelationshipSatisfaction,
+       t_StockOptionLevel = StockOptionLevel,
+       t_TotalWorkingYears = sqrt(TotalWorkingYears),
+       t_TrainingTimesLastYear = TrainingTimesLastYear,
+       t_WorkLifeBalance = WorkLifeBalance,
+       t_YearsAtCompany = log(YearsAtCompany+1),
+       t_YearsInCurrentRole = log(YearsInCurrentRole+1),
+       t_YearsSinceLastPromotion = log(YearsSinceLastPromotion+1),
+       t_YearsWithCurrManager = log(YearsWithCurrManager+1)) %>%
+    mutate(z_DistanceFromHome = scale(t_DistanceFromHome),
+         z_Education = scale(t_Education),
+         z_EnvironmentSatisfaction = scale(t_EnvironmentSatisfaction),
+         z_JobInvolvement = scale(t_JobInvolvement),
+         z_JobLevel = scale(t_JobLevel),
+         z_JobSatisfaction = scale(t_JobSatisfaction),
+         z_NumCompaniesWorked = scale(t_NumCompaniesWorked),
+         z_PercentSalaryHike = scale(t_PercentSalaryHike),
+         z_PerformanceRating = scale(t_PerformanceRating),
+         z_RelationshipSatisfaction = scale(t_RelationshipSatisfaction),
+         z_StockOptionLevel = scale(t_StockOptionLevel),
+         z_TotalWorkingYears = scale(t_TotalWorkingYears),
+         z_TrainingTimesLastYear = scale(t_TrainingTimesLastYear),
+         z_WorkLifeBalance = scale(t_WorkLifeBalance),
+         z_YearsAtCompany = scale(t_YearsAtCompany),
+         z_YearsInCurrentRole = scale(t_YearsInCurrentRole),
+         z_YearsSinceLastPromotion = scale(t_YearsSinceLastPromotion),
+         z_YearsWithCurrManager = scale(t_YearsWithCurrManager),
+         z_MaritalStatus = scale(numeric_MaritalStatus),
+         z_OverTime = scale(numeric_OverTime))
+  
+  if ("MonthlyIncome" %in% colnames(raw_df)) {
+    xformed$t_MonthlyIncome <- log(raw_df$MonthlyIncome)
+  }
+  if ("Attrition" %in% colnames(raw_df)) {
+    xformed$numeric_attrition = as.numeric(raw_df$Attrition)
+  }
+  return(xformed)
+}
+
+# call the function
+train_raw <- read.csv('CaseStudy2-data.csv') 
+
+employee_data <- my_transform(train_raw)
+
+```
+
+# check for NA values after transform
+```{r}
+employee_data %>% 
+  select_if(function(x) any(is.na(x))) %>% 
+  summarise_each(funs(sum(is.na(.)))) -> transform_NA
+transform_NA
+```
+

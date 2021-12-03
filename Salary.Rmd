@@ -1,0 +1,287 @@
+---
+title: "Salary Prediction"
+author: "George M. Ndede"
+date: "12/01/2021"
+output: html_document
+---
+
+```{r salary_setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+library(leaps)
+library(MASS)
+library(relaimpo)
+library(car)
+library(glmnet)
+library(ggplot2)
+```
+
+```{r lm_common}
+all_numeric <- c("Age",
+"t_DistanceFromHome",
+"t_Education",
+"t_EnvironmentSatisfaction",
+"t_JobInvolvement",
+"t_JobLevel",
+"t_JobSatisfaction",
+"t_NumCompaniesWorked",
+"t_PercentSalaryHike",
+"t_PerformanceRating",
+"t_RelationshipSatisfaction",
+"t_StockOptionLevel",
+"t_TotalWorkingYears",
+"t_TrainingTimesLastYear",
+"t_WorkLifeBalance",
+"t_YearsAtCompany",
+"t_YearsInCurrentRole",
+"t_YearsSinceLastPromotion",
+"t_YearsWithCurrManager",
+"numeric_MaritalStatus",
+"numeric_OverTime")
+
+all_factors <- c("BusinessTravel",
+"Department",
+"EducationField",
+"Gender",
+"JobRole",
+"MaritalStatus")
+
+
+stepwise_factors <- c("BusinessTravel",
+"Gender",
+"JobRole")
+stepwise_numeric <- c("t_DistanceFromHome",
+"t_JobLevel",
+"t_PercentSalaryHike",
+"t_PerformanceRating",
+"t_TotalWorkingYears",
+"t_YearsSinceLastPromotion",
+"t_YearsWithCurrManager")
+
+
+subjective_factors <- c("Gender",
+"JobRole",
+"EducationField")
+subjective_numeric <- c("t_JobLevel",
+"t_TotalWorkingYears",
+"t_Education",
+"t_PerformanceRating",
+"t_RelationshipSatisfaction",
+"t_StockOptionLevel",
+"t_YearsAtCompany")
+                      
+minimal_numeric <- c("JobLevel","t_TotalWorkingYears")
+reprise_numeric <- c("JobLevel","t_YearsWithCurrManager","t_TotalWorkingYears")
+
+mi_f_stepwise   <- as.formula(paste("t_MonthlyIncome ~ ",
+                             paste(stepwise_numeric,collapse="+")))
+                             
+mi_f_creosote   <- as.formula(paste("t_MonthlyIncome ~ ",
+                             paste(all_numeric,collapse="+")))
+                             
+mi_f_subjective <- as.formula(paste("t_MonthlyIncome ~ ",
+                             paste(subjective_numeric,collapse="+")))
+                             
+mi_f_minimal <- as.formula(paste("t_MonthlyIncome ~ ",
+                             paste(minimal_numeric,collapse="+")))
+                             
+mi_f_reprise <- as.formula(paste("t_MonthlyIncome ~ ",
+                             paste(reprise_numeric,collapse="+")))
+
+train_control <- trainControl(method="LOOCV")
+```
+
+```{r useful_functions}
+make_qc <- function(model) 
+{
+  df <- employee_data
+  df$predicted <- exp(model$fitted.values)
+  df$residuals <- model$residuals
+  return(df)
+}
+
+qc_plots <- function(qc,label)
+{
+  ggplot(qc, aes(x=residuals)) + geom_histogram() + ggtitle(paste("Histograme of ",label,"residuals"))
+  ggplot(qc, aes(x=MonthlyIncome,y=predicted)) + geom_point() + ggtitle(paste("predicted versus actual for ",label))
+  ggplot(qc, aes(sample=residuals)) + stat_qq() + ggtitle(paste("QQ of residuals for",label))
+}
+```
+
+```{r stepwise}
+########################### stepwise ###################################
+
+# stepwise
+stepwise_loocv <- train(mi_f_stepwise,
+                      data=employee_data,
+                      method="lm",trControl = train_control)
+print(stepwise_loocv)
+stepwise_r2 <- stepwise_loocv$results$Rsquared
+stepwise_model <- stepwise_loocv$finalModel
+summary(stepwise_model)
+stepwise_qc <- make_qc(stepwise_model)
+```
+```{r}
+ggplot(stepwise_qc, aes(x=residuals)) + 
+  geom_histogram() + 
+  ggtitle(paste("Histogram of residuals from Stepwise"))
+```
+```{r}
+ggplot(stepwise_qc, aes(x=MonthlyIncome,y=predicted,col=Department)) +
+  geom_point() + 
+  ggtitle(paste("predicted versus actual for Stepwise"))
+```
+```{r}
+ggplot(stepwise_qc, aes(sample=residuals)) +
+  stat_qq() + 
+  ggtitle(paste("QQ of residuals for Stepwise"))
+```
+
+```{r}
+rm(stepwise_loocv)
+#rm(stepwise_model)
+rm(stepwise_qc)
+gc()
+```
+
+
+```{r subjective}
+########################### subjective ###################################
+
+# subjectively chosen predictors
+subjective_loocv <- train(mi_f_subjective,
+                      data=employee_data,
+                      method="lm",trControl = train_control)
+print(subjective_loocv)
+subjective_r2 <- subjective_loocv$results$Rsquared
+subjective_model <- subjective_loocv$finalModel
+summary(subjective_model)
+subjective_qc <- make_qc(subjective_model)
+```
+
+```{r}
+ggplot(subjective_qc, aes(x=residuals)) + 
+  geom_histogram() + 
+  ggtitle(paste("Histogram of residuals from Subjective Model"))
+```
+
+```{r}
+ggplot(subjective_qc, aes(x=MonthlyIncome,y=predicted,color=EducationField)) +
+  geom_point() + 
+  ggtitle(paste("predicted versus actual for Subjective Model"))
+```
+
+```{r}
+ggplot(subjective_qc, aes(sample=residuals)) +
+  stat_qq() + 
+  ggtitle(paste("QQ of residuals for Subjective Model"))
+```
+
+```{r}
+rm(subjective_loocv)
+#rm(subjective_model)
+rm(subjective_qc)
+gc()
+```
+
+```{r minimal}
+########################### minimal ###################################
+
+# minimal predictors
+minimal_loocv <- train(mi_f_minimal,
+                      data=employee_data,
+                      method="lm",trControl = train_control)
+print(minimal_loocv)
+minimal_r2 <- minimal_loocv$results$Rsquared
+minimal_model <- minimal_loocv$finalModel
+summary(minimal_model)
+minimal_qc <- make_qc(minimal_model)
+```
+
+```{r}
+ggplot(minimal_qc, aes(x=residuals)) + 
+  geom_histogram() + 
+  ggtitle(paste("Histogram of residuals from minimal Model"))
+```
+
+```{r}
+ggplot(minimal_qc, aes(x=MonthlyIncome,y=predicted,color=EducationField)) +
+  geom_point() + 
+  ggtitle(paste("predicted versus actual for minimal Model"))
+```
+
+```{r}
+ggplot(minimal_qc, aes(sample=residuals)) +
+  stat_qq() + 
+  ggtitle(paste("QQ of residuals for minimal Model"))
+```
+
+```{r}
+rm(minimal_loocv)
+#rm(minimal_model)
+rm(minimal_qc)
+gc()
+```
+
+```{r reprise}
+########################### reprise ###################################
+
+# reprise predictors
+reprise_loocv <- train(mi_f_reprise,
+                      data=employee_data,
+                      method="lm",trControl = train_control)
+print(reprise_loocv)
+reprise_r2 <- reprise_loocv$results$Rsquared
+reprise_model <- reprise_loocv$finalModel
+summary(reprise_model)
+reprise_qc <- make_qc(reprise_model)
+```
+
+```{r}
+ggplot(reprise_qc, aes(x=residuals)) + 
+  geom_histogram() + 
+  ggtitle(paste("Histogram of residuals from reprise Model"))
+```
+
+```{r}
+ggplot(reprise_qc, aes(x=MonthlyIncome,y=predicted,color=EducationField)) +
+  geom_point() + 
+  ggtitle(paste("predicted versus actual for reprise Model"))
+```
+
+```{r}
+ggplot(reprise_qc, aes(sample=residuals)) +
+  stat_qq() + 
+  ggtitle(paste("QQ of residuals for reprise Model"))
+```
+
+```{r}
+rm(reprise_loocv)
+#rm(reprise_model)
+rm(reprise_qc)
+gc()
+```
+
+
+```{r predict_known}
+reprise_raw <- read.csv('CaseStudy2-data.csv')
+reprise_test <- my_transform(reprise_raw)
+subjective_sanity <- exp(predict(subjective_model, newdata = reprise_test))
+reprise_sanity    <- exp(predict(reprise_model, newdata = reprise_test))
+stepwise_sanity   <- exp(predict(stepwise_model, newdata = reprise_test))
+minimal_sanity    <- exp(predict(minimal_model, newdata = reprise_test))
+```
+
+
+```{r predict_salary}
+# read in the blind test dataset
+
+blind_raw <- read.csv('CaseStudy2CompSetNoSalary.csv')
+blind_test <- my_transform(blind_raw)
+predicted_salary <- exp(predict(stepwise_model,newdata=blind_test))
+
+for_submission <- cbind(blind_test$ID,predicted_salary)
+colnames(for_submission) <- c("ID","Salary")
+write.csv(for_submission,file="Case2PredictionsPalmerSalary.csv",row.names=FALSE,quote=FALSE)
+
+```

@@ -1,0 +1,60 @@
+---
+title: "Basic EDA"
+author: "George M. Ndede"
+date: "11/30/2021"
+output: html_document
+---
+
+# Basic EDA
+
+```{r eda_basic, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gridExtra)
+library(grid)
+library(ggplot2)
+library(lattice)
+
+```
+
+## Check for NA values
+
+```{r sanity_check}
+# check for NA values
+train_raw %>% 
+  select_if(function(x) any(is.na(x))) %>% 
+  summarise_each(funs(sum(is.na(.)))) -> raw_NA
+raw_NA
+```
+
+## Investigate Rate variables
+
+```{r crossplot_wage_rates}
+train_raw %>% 
+  select(MonthlyIncome,DailyRate,HourlyRate,MonthlyRate) %>% pairs()
+```
+
+The rate variables do not seem correlated with Monthly Income.
+We will discard them and stick with only Monthly Income.
+
+## Summarize individual numeric variables.
+```{r}
+summary(train_raw$DistanceFromHome)
+summary(train_raw$Education)
+summary(train_raw$EnvironmentSatisfaction)
+summary(train_raw$JobInvolvement)
+summary(train_raw$JobLevel)
+summary(train_raw$JobSatisfaction)
+summary(train_raw$NumCompaniesWorked)
+summary(train_raw$PercentSalaryHike)
+summary(train_raw$PerformanceRating)
+summary(train_raw$RelationshipSatisfaction)
+summary(train_raw$StockOptionLevel)
+summary(train_raw$TotalWorkingYears)
+summary(train_raw$TrainingTimesLastYear)
+summary(train_raw$WorkLifeBalance)
+summary(train_raw$YearsAtCompany)
+summary(train_raw$YearsInCurrentRole)
+summary(train_raw$YearsSinceLastPromotion)
+summary(train_raw$YearsWithCurrManager)
+
+```
