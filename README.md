@@ -64,8 +64,9 @@ Case2PredictionsNdedeSalary.csv    		  - predicting the Monthly Income
 
 CaseStudy.html                      	  - Final full report
 
-Ndede_George_DS6306_CaseStudy-2.pptx    - Power Point presentation
+Ndede_George_DS6306_CaseStudy-2.pptx    - Power Point presentation (Full version)
 
+Ndede_George_DS6306_CaseStudy-2-Presentation.pptx    - Power Point presentation (Summerised version)
 
 ## Inference 
 
