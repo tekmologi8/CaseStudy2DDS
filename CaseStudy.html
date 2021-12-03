@@ -819,7 +819,7 @@ predicted_salary &lt;- exp(predict(stepwise_model,newdata=blind_test))
 
 for_submission &lt;- cbind(blind_test$ID,predicted_salary)
 colnames(for_submission) &lt;- c(&quot;ID&quot;,&quot;Salary&quot;)
-write.csv(for_submission,file=&quot;Case2PredictionsPalmerSalary.csv&quot;,row.names=FALSE,quote=FALSE)</code></pre>
+write.csv(for_submission,file=&quot;Case2PredictionsNdedeSalary.csv&quot;,row.names=FALSE,quote=FALSE)</code></pre>
 </div>
 
 
